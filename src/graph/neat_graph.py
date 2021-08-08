@@ -11,11 +11,9 @@ class Graph:
 
     def add_edge(self, source: int, destination: int) -> None:
         self.vertices[source].add(destination)
-        self.vertices[destination].add(source)
 
     def remove_edge(self, source: int, destination: int) -> None:
         self.vertices[source].discard(destination)
-        self.vertices[destination].discard(source)
 
     def __str__(self) -> str:
         return str(self.vertices)

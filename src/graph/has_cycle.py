@@ -1,4 +1,5 @@
 ################ Graph cycle detection ################
+""" Have a local visited and an outer visited, local visited can not repeat """
 from typing import Set, Optional
 
 import neat_graph
@@ -7,8 +8,6 @@ import neat_graph
 def has_cycle(graph: neat_graph.Graph) -> bool:
     visited: Set[int] = set()
     for vertex in graph.vertices:
-        if vertex in visited:
-            continue
         if has_cycle_helper(graph, vertex, visited):
             return True
     return False
@@ -19,12 +18,12 @@ def has_cycle_helper(graph: neat_graph.Graph,
     """ Returns True if the DFS from starting_vertex hits a repeated node """
     local_visited = set() if not local_visited else local_visited
     local_visited.add(starting_vertex)
+    if starting_vertex in visited:
+        return False
     visited.add(starting_vertex)
     for neighbor in graph.vertices.get(starting_vertex, []):
         if neighbor in local_visited:
             return True
-        if neighbor in visited:
-            continue
         if has_cycle_helper(graph, neighbor, visited, local_visited):
             return True
     return False

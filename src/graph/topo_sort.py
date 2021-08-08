@@ -1,44 +1,38 @@
-from typing import List, Iterator, Set
-import collections
+############ Topological sort with DFS ############
+""" Make a normal DFS and add node to result when there are no more dependents of it, return reverse of this list """
+import neat_graph
+
+from typing import List, Set
 
 
-class Solution:
-    
-    #Function to return list containing vertices in Topological order.
-    def topoSort(self, V: int, adj: List[List[int]]) -> List[int]:
-        """ Returns the sorted array of vertices """
-        starting_positions: Iterator[int] = self.find_starting_positions(V, adj)
-        visited: Set[int] = set()
-        result: List[int] = []
-        for starting_position in starting_positions:
-            dfs_stack: List[int] = self.build_dfs_stack(adj, starting_position, visited)
-            result.extend(dfs_stack)
-        return result
+def topological_sort(graph: neat_graph.Graph) -> List[int]:
+    visited: Set[int] = set()
+    result: List[int] = []
+    for vertex in graph.vertices:
+        sort_helper(graph, vertex, result, visited)
+    return result[::-1]  # reverse result before returning
         
-    def find_starting_positions(self, V: int, adj: List[List[int]]) -> Iterator[int]:
-        predecessors: collections.defaultdict = collections.defaultdict(list)
-        for src, dst in adj:
-            predecessors[dst].append(src)
-        for vertex in range(V):
-            if not predecessors.get(vertex):
-                yield vertex
-        
-            
-    def build_dfs_stack(self, adj: List[List[int]], starting_position: int, visited: Set[int]) -> List[int]:
-        """ Fills the dfs stack and returns it """
-        if starting_position in visited:
-            return []
-        stack: List[int] = [starting_position]
-        out_stack: List[int] = [starting_position]
-        visited.add(starting_position)
 
-        while stack:
-            vertex = stack.pop()
-            for neighbor in adj[vertex]:
-                if neighbor in visited:
-                    continue
-                visited.add(neighbor)
-                stack.append(neighbor)
-                out_stack.append(neighbor)
+def sort_helper(graph: neat_graph.Graph, starting_vertex: int, 
+                      result: List[int], visited: Set[int]) -> None:
+    """ DFS implementation to update the sorted result list """
+    if starting_vertex in visited:
+        return
+    visited.add(starting_vertex)
+    for neighbor in graph.vertices.get(starting_vertex, []):
+        sort_helper(graph, neighbor, result, visited)
+    # Add to result when all the dependents have been added
+    result.append(starting_vertex)
 
-        return out_stack
+
+if __name__ == '__main__':
+    graph: neat_graph.Graph = neat_graph.Graph()
+    graph.add_edge(1,2)
+    graph.add_edge(2,3)
+    graph.add_edge(2,5)
+    graph.add_edge(4,2)
+    graph.add_edge(4,5)
+    print(graph, end='\n')
+    import pdb;pdb.set_trace()
+    topological_sort(graph)
+
