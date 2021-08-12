@@ -88,8 +88,7 @@ def make_move(grid: List[List[int]], ant: Ant):
 	current_position: Position = ant.position
 	current_value: int = grid[current_position.row][current_position.column]
 	# Flip grid value
-	grid[current_position.row][current_position.column] += 1
-	grid[current_position.row][current_position.column] %= 2 
+	grid[current_position.row][current_position.column] = (current_value + 1) % 2
 	
 	if current_value == 1:  # In case of black, turn 90 degrees left
 		ant.direction = Direction((ant.direction.value - 1)%4)
