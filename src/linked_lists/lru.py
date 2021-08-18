@@ -65,22 +65,26 @@ class Queue:
 			self.start = next
 		return node_to_remove.key
 
-	def move_to_the_end(self, node: Node) -> Node:
-		if self.start == node:
-			self.start = self.start.next
-		if self.end == node:
-			self.end = self.end.previous
-		previous: Node = node.previous
-		next: Node = node.next
+	def remove(self, node: Node) -> None:
+		previous: Optional['Node'] = node.previous
+		next: Optional['Node'] = node.next
+		# Update neighbors
 		if previous:
 			previous.next = next
 		if next:
 			next.previous = previous
+		# Update Queue pointers if needed
+		if self.start == node:
+			self.start = self.start.next
+		if self.end == node:
+			self.end = self.end.previous
+
+	def move_to_the_end(self, node: Node) -> Node:
+		self.remove(node)
 		self.insert(node.key, node.value)
 		return self.end
 
 
-@dataclasses.dataclass
 class LruCache:
 	
 	def __init__(self, max_size: int) -> None:
