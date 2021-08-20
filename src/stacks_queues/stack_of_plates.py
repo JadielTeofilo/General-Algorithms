@@ -7,7 +7,13 @@ SetOfStacks. push () and SetOfStacks. pop() should behave identically to a singl
 (that is, pop ( ) should return the same values as it would if there were just a single stack).
 
 
-1, , , 
+1, 1, , 2, 1, 
+
+pop_at()
+What should happen when it pops, should if decrease size until its empty
+	should it receive items from next stack
+	if it is allowed to be empty than a pop stack might raise a index error when accessing an empty stack
+
 
 """
 from typing import List
@@ -20,10 +26,11 @@ class SetOfStacks:
 		self.max_size = max_size
 		
 	def push(self, value: int) -> None:
-		self.update_full_stack()  #TODO
+		self.update_full_stack()
 		self.stacks[-1].append(value)
 
 	def update_full_stack(self) -> None:
+		""" Adds a new stack if the last is full """
 		if len(self.stacks[-1]) == self.max_size:
 			self.stacks.append([])
 
@@ -41,6 +48,11 @@ class SetOfStacks:
 			else:
 				break
 
+	def pop_at(self, index: int) -> int:
+		if index >= len(self.stacks) or not self.stacks[index]:
+			raise IndexError('Index out of range')
+		self.remove_empty_stacks()
+		return self.stacks[index].pop()
 
 
 import pdb;pdb.set_trace()
