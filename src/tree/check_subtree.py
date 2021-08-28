@@ -19,6 +19,8 @@ Out - bool
 Are there duplicate values on the tree?
 Yes
 
+O(n + m*k) time complexity - where k is the amount of elements on first 
+tree that are equal to the root of the second
 
 """
 from typing import Optional, Iterator

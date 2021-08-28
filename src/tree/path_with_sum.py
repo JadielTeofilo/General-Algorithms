@@ -28,7 +28,7 @@ Brute force
 For each node try all possibilities
 
 
-O(N^2) time complexity
+O(N*log(N)) time complexity
 O(N) space complexity
 
 """
