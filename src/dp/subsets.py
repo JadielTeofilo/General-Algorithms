@@ -19,8 +19,8 @@ build sets (size, values, result, curr_subset)
 	bs(size - 1, values.diff(value), result, curr_subset.union(value))
 
 
-Time complexity is at least n*2^N
-O(n^2) Space complexity 
+Time complexity is at least n*2^n
+O(n*n^2) Space complexity 
 
 
 """
@@ -33,14 +33,12 @@ def power_set(numbers: Set[int]) -> List[Set[int]]:
 	result: List[Set[int]] = []
 	
 	result.append(set())
-	last_size_subsets: List[Set[int]] = [set()]
 
 	for i in range(0, len(indexed_numbers)):
 		subsets: List[Set[int]] = build_subsets(
-			last_size_subsets, 
+			result, 
 			indexed_numbers[i]
 		)
-		last_size_subsets = subsets
 		result.extend(subsets)
 
 	return result
@@ -51,7 +49,7 @@ def build_subsets(base_subsets: List[Set[int]],
 	new_subsets: List[Set[int]] = [subset.copy() for subset in base_subsets]
 	for subset in new_subsets:
 		subset.add(number)
-	return base_subsets + new_subsets
+	return new_subsets
 
 
 import pdb;pdb.set_trace()
