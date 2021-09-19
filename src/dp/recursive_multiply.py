@@ -37,9 +37,8 @@ Out int
 
 12 << 1
 
-Since whe are halfing the number m at each step:
-O(log m) time complexity where m is the smaller of the numbers
-O(log m) space complexity where m is the smaller of the numbers
+O(log m) time complexity where m is the number of bits of the smaller of the numbers
+O(log m) space complexity where m is the number of bits of smaller of the numbers
 
 """
 from typing import List
