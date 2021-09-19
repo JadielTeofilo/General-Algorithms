@@ -7,85 +7,101 @@ expression shou ld be fully parenthesized (e.g., (e) A (1» but not extraneously
 In - expression: List[str], result: bool
 Out - int
 
-1 & 0 | O ^ 1 = 1
-
-1
-0
-1
+1^0|0|1
 
 
-^
-&
-
-O(n^2*n!) time complexity where n is the amount of operators
-O(n) space where n is the amount of operators
 
 
-'1^0|0|1'
 
-(1^0)|(0|1)
 
 """
-from typing import List, Dict, Callable, Tuple
+from typing import List, Dict, Callable, Iterable
+import collections
 
 
-OPERATIONS: Dict[str, Callable] = {
-    '&': lambda x, y: x & y,
-    '|': lambda x, y: x | y,
-    '^': lambda x, y: x ^ y,
-}
+ExpressionResult = collections.namedtuple('ExpressionResult',
+                                          'true false')
+
+
+OPERATORS: List[str] = [
+    '|', '^', '&'
+]
 
 
 def boolean_eval(exp: List[str], result: bool) -> int:
-    """
-        Finds the amount of valid expressions 
-        considering different parenthesis placing
-    """
-    operators: List[str] = find_operators(exp)
-    values: List[bool] = find_values(exp)
-    # Counter to store the amount of valid expressions
-    valid_expressions: Dict[str, int] = {'sum': 0}
-    boolean_eval_helper(values, operators, result, valid_expressions)
-    return valid_expressions['sum']
+    """ Counts the ways that parenthesis can be 
+        arranged on exp that lead to result """
+    cache: Dict[str, int] = {}
+    return eval_amount(exp, result, cache)
 
 
-def find_operators(exp: List[str]) -> List[str]:
-    ops: List[str] = ['&', '|', '^']
-    return [item for item in exp if item in ops]
-
-
-def find_values(exp: List[str]) -> List[bool]:
-    return [bool(item) for item in exp if item.isdigit()]
-
-
-def boolean_eval_helper(values: List[bool], operators: List[str],
-                        result: bool, 
-                        valid_expressions: Dict[str, int]) -> None:
-    if not operators:
-        # Adds one to the valid expressions if the result is right
-        valid_expressions['sum'] += int(values[0] == result)
-        return
-    for index in range(len(operators)):
-        new_operators, new_values = apply_op(
-            index, operators, values
-        )
-        boolean_eval_helper(new_values, new_operators, result, valid_expressions)
-
-
-def apply_op(index: int, operators: List[str], 
-             values: List[bool]) -> Tuple[List[str], List[bool]]:
-    """ Applies operator on the given index """
-    left: bool = values[index]
-    right: bool = values[index + 1]
-    result: bool = OPERATIONS[operators[index]](left, right)
-    new_values: List[bool] = values[:index] + [result] + values[index + 2:]
-    new_operators: List[str] = operators[:index] + operators[index + 1:]
-    return new_operators, new_values
+def eval_amount(exp: List[str], result: bool, 
+                cache: Dict[str, int]) -> int:
+    if len(exp) == 1:
+        # Returns 1 if the expression matches the 
+        # result, 0 other wise
+        return int(bool(int(exp[0])) == result)
     
+    exp_text: str = ''.join(exp)
+    
+    if cache.get(exp_text + str(result)):
+        return cache[exp_text + str(result)]
+    
+    valid_amount: int = 0
+    for index in find_operations(exp):
+        left: ExpressionResult = ExpressionResult(
+            eval_amount(exp[:index], True, cache),
+            eval_amount(exp[:index], False, cache)
+        )
+        right: ExpressionResult = ExpressionResult(
+            eval_amount(exp[index+1:], True, cache),
+            eval_amount(exp[index+1:], False, cache)
+        )
+        valid_amount += get_amount_by_opeartor[exp[index]](
+            left, right, result
+        )
+    
+    cache[exp_text + str(result)] = valid_amount
+    return valid_amount
 
 
-print(boolean_eval(list('1^0|0|1'), True))
+def find_operations(exp: List[str]) -> Iterable[int]:
+    """ Finds the indexes of all expression operators """
+    for index, item in enumerate(exp):
+        if item in OPERATORS:
+            yield index 
+
+
+def or_amount_finder(right: ExpressionResult, 
+                     left: ExpressionResult, result: bool) -> int:
+    """ Finds number of ops that match result """
+    if result:
+        return left.true * right.true + left.false * right.true + left.true * right.false
+    return left.false * right.false
+
+
+def and_amount_finder(right: ExpressionResult, 
+                      left: ExpressionResult, result: bool) -> int:
+    """ Finds number of ops that match result """
+    if result:
+        return left.true * right.true
+    return left.false * right.false + left.false * right.true + left.true * right.false
+
+
+def xor_amount_finder(right: ExpressionResult, 
+                      left: ExpressionResult, result: bool) -> int:
+    """ Finds number of ops that match result """
+    if result:
+        return left.false * right.true + left.true * right.false
+    return left.false * right.false + left.true * right.true
+
+
+get_amount_by_opeartor: Dict[str, Callable] = {
+        '|': or_amount_finder,
+        '&': and_amount_finder,
+        '^': xor_amount_finder,
+}
+
+print(boolean_eval(list('1^0|0|1'), False))
 print(boolean_eval(list('0&0&0&1^1|0'), True))
 import pdb;pdb.set_trace()
-    
-    
