@@ -54,13 +54,6 @@ def peaks_and_valleys(numbers: List[int]) -> List[int]:
 			continue
 		create_valley(numbers, left, mid, right)
 
-	# Handle edge case where the size of num is even 
-	# and the last element is not present on the sliding window
-	if (len(numbers) > 1 and len(numbers) % 2 == 0 and
-		not is_a_valley(numbers[-2], numbers[-1], numbers[-1])):
-		# Complete the right spot with last element again
-		# is sufficient to create a correct valley
-		create_valley(numbers, -2, -1, -1)
 	return numbers
 
 
@@ -76,8 +69,14 @@ def sliding_window(
 	numbers: List[int], size=3
 ) -> Iterable[Tuple[int, int, int]]:
 	""" Builds a generator for indexes on a sliding window """
-	for i in range(0, len(numbers) - 2, 2):
-		yield i, i+1, i+2
+	for i in range(0, len(numbers), 2):
+		left: int = i
+		# For elements outside the list, 
+		# use the same index, 
+		# since it will still be a valid valley
+		mid: int = i + 1 if i + 1 < len(numbers) else i
+		right: int = i + 2 if i + 2 < len(numbers) else i
+		yield left, mid, right
 
 
 def is_a_valley(left_num: int, mid_num: int, right_num: int) -> bool:
