@@ -1,6 +1,8 @@
+#!/usr/bin/env python3
 """
 Removes type hinting from source code
 """
+import re
 import sys
 import ast
 import astunparse
@@ -37,7 +39,7 @@ if __name__ == '__main__':
 		raise ValueError('Missing file name')
 	with open(file_source_name) as fp:
 		source = fp.read()
-
+	source = re.sub('"""[\s\S]*?"""', '', source)
 	# parse the source code into an AST
 	parsed_source = ast.parse(source)
 	# remove all type annotations, function return type definitions
