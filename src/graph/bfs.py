@@ -15,17 +15,14 @@ def bfs(graph: neat_graph.Graph, starting_vertex: int) -> None:
 def bfs_helper(graph: neat_graph.Graph, starting_vertex:int, visited: Set[int]) -> None:
     """ Does BFS on connected graph and prints nodes """
     queue: collections.deque[int] = collections.deque()
-    if starting_vertex in visited:
-        return
     queue.append(starting_vertex)
-    visited.add(starting_vertex)
     while queue:
         vertex: int = queue.popleft()
+        if vertex in visited:
+            continue
+        visited.add(vertex)
         print(vertex)
         for neighbor in graph.vertices[vertex]:
-            if neighbor in visited:
-                continue
-            visited.add(neighbor)
             queue.append(neighbor)
 
 
