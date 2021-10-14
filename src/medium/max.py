@@ -44,7 +44,7 @@ def number_max(left: int, right: int) -> int:
 	right_rest: int = right - left
 	
 	regular_result: int = (sign(left_rest) * right + 
-						   sign(right_rest) * left)
+						   (sign(left_rest)^1) * left)
 	diff_sign_result: int = (sign(left) * right 
 							 + sign(right) * left) 
 	
@@ -56,7 +56,7 @@ def sign(number: int) -> int:
 	return (number >> 31) & 1
 	
 
-print(number_max(3, 4), 4)
+print(number_max(4, 4), 4)
 print(number_max(32, 4), 32)
 print(number_max(123, 43), 123)
 print(number_max(-1, -4), -1)
