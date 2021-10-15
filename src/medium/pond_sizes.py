@@ -26,12 +26,13 @@ Key = collections.namedtuple('Key', 'row col')
 class Graph:
 
 	def __init__(self) -> None:
-		self.vertices: Dict[Key, Set[Key]] = collections.defaultdict(set)
+		self.vertices: Set[Key] = set()
+		self.edges: Dict[Key, Set[Key]] = collections.defaultdict(set)
 	
 	def insert(self, origin: Key, target: Optional[Key]) -> None:
-		if not target:
-			self.vertices[origin] = set() 
-		self.vertices[origin].add(target)
+		self.edges[origin].add(target)
+		self.vertices.add(origin)
+		self.vertices.add(target)
 		
 
 def pond_sizes(grid: List[List[int]]) -> Iterable[int]:
@@ -56,7 +57,7 @@ def turn_into_graph(grid: List[List[int]]) -> Graph:
 		for col in range(len(grid[0])):
 			if grid[row][col] != 0:
 				continue
-			graph.insert(origin=Key(row, col), target=None)
+			graph.vertices.add(Key(row, col))
 			for option in options:
 				target: Key = Key(row+option.row, col+option.col)
 				if not is_valid(target, grid):
@@ -92,7 +93,7 @@ def _count_connections(root: Key, visited: Set[Key], graph: Graph) -> int:
 			continue
 		count += 1
 		visited.add(vertex)
-		for neighbor in graph.vertices[vertex]:
+		for neighbor in graph.edges[vertex]:
 			stack.append(neighbor)
 	return count
 	
