@@ -17,41 +17,33 @@ import math
 from typing import List
 
 
-BitCount = collections.namedtuple('BitCount', 'zeros')
+BitCount = collections.namedtuple('BitCount', 'zeros ones')
 
 
 def missing_number(numbers: List[int]) -> int:
 	last_num: int = len(numbers)
 	target_number: int = 0
 	for bit in range(math.ceil(math.log(last_num, 2))):
-		expected_bit_count: BitCount = find_expected_bit_count(bit, last_num) 
 		bit_count: BitCount = find_current_bit_count(bit, numbers)
-		if expected_bit_count.zeros <= bit_count.zeros:
-			target_number = update_bit(target_number, bit, 1)
+		if (bit_count.zeros == bit_count.ones - 1 or 
+			bit_count.zeros == bit_count.ones):
+			missing_bit: int = 0
 		else:
-			target_number = update_bit(target_number, bit, 0)
-		print(target_number)
+			missing_bit: int = 1
+		numbers = remove_incorrect(numbers, bit, correct_bit=missing_bit)
+		target_number = update_bit(target_number, bit, missing_bit)
 	return target_number
-
-	
-def find_expected_bit_count(bit: int, size: int) -> BitCount:
-	if bit == 0:
-		window_size = 2
-	else:
-		window_size: int = bit * 4  # the size of cycle, 0101 = 2, 0011 = 4
-	windows: int = size // window_size
-	zeros: int = windows * window_size // 2
-	left_overs: int = size % window_size + 1
-	left_over_zeros: int = min(left_overs, window_size // 2)
-	return BitCount(zeros+left_over_zeros)
 
 
 def find_current_bit_count(bit: int, numbers: List[int]) -> BitCount:
 	zeros: int = 0
+	ones: int = 0
 	for number in numbers:
-		# Adds one if equals zero
+		# Adds one if equals the desired bit
 		zeros += int(get_bit(number, bit) == 0)
-	return BitCount(zeros)
+		ones += int(get_bit(number, bit) == 1)
+	return BitCount(zeros, ones)
+
 
 def get_bit(number: int, index: int) -> int:
 	# Gets bit on the desired position
@@ -65,7 +57,15 @@ def update_bit(number: int, bit: int, value: int) -> int:
 	return number | (value << bit)
 
 
+def remove_incorrect(numbers: List[int], 
+					 bit: int, correct_bit: int) -> List[int]:
+	return [
+		number 
+		for number in numbers
+		if get_bit(number, bit) == correct_bit
+	]
+
 
 print(missing_number([
-0,1,2,3,4,5,6,7,8,9,10,12,13,14,15
+0,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 ]))
