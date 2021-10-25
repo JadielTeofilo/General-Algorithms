@@ -27,25 +27,40 @@ go on each number and check what are its factors, stop on the kth
 
 
 """
+import math
 from typing import List, Set
 
 
 def kth_multiple(kth: int) -> int:
-	target_primes: List[int] = [3, 5, 7]
-	prime_index: int = 0
-	generated_values: Set[int] = {1}
-	number: int = 1 
-	while kth > 1:
-		print(f'a{target_primes[prime_index]}aaaa')
-		for value in generated_values:
-			test: int = value * target_primes[prime_index]
-			if test not in generated_values:
-				number = test
-				break
-		generated_values.add(number)
-		prime_index = (prime_index + 1) % 3
-		kth -= 1
-	return number 
+    if kth <= 0:
+        raise ValueError('Kth has to be at least 1')
+    primes: List[int] = [3, 5, 7]
+    multiples: List[int] = [1]
+    number: int = 1
+    while kth > 1:
+        kth -= 1
+        number = generate_valid_multiple(primes, multiples)
+    return number
 
-for i in range(1, 10):
-	print(kth_multiple(i))	
+
+def generate_valid_multiple(primes: List[int], 
+                            multiples: List[int]) -> int:
+    min_: Union[int, float] = math.inf
+    for prime in primes:
+        min_ = min(generate_from_prime(prime, multiples), min_)
+    multiples.append(int(min_))
+    return int(min_)
+
+
+def generate_from_prime(prime: int, multiples: List[int]) -> int:
+    if not multiples:
+        raise ValueError('There needs to be at least one multiple')
+    visited: Set[int] = set(multiples)
+    for multiple in multiples:
+        new_multiple: int = prime * multiple
+        if new_multiple not in visited:
+            return new_multiple
+
+for i in range(1, 25):
+    print(kth_multiple(i))
+
