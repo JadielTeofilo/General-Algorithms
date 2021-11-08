@@ -1,4 +1,4 @@
-################ Graph cycle detection Directed graph ################
+################ Graph cycle detection UnDirected graph ################
 """ Have a local visited and an outer visited, local visited can not repeat """
 from typing import Set, Optional
 
@@ -14,7 +14,7 @@ def has_cycle(graph: neat_graph.Graph) -> bool:
 
 def has_cycle_helper(graph: neat_graph.Graph, 
                                starting_vertex: int, visited: Set[int], 
-                               local_visited: Optional[Set[int]] = None) -> bool:
+                               local_visited: Optional[Set[int]] = None,parent: Optional[int]=None) -> bool:
     """ Returns True if the DFS from starting_vertex hits a repeated node """
     local_visited = set() if not local_visited else local_visited
     if starting_vertex in local_visited:
@@ -24,7 +24,9 @@ def has_cycle_helper(graph: neat_graph.Graph,
         return False
     visited.add(starting_vertex)
     for neighbor in graph.vertices.get(starting_vertex, []):
-        if has_cycle_helper(graph, neighbor, visited, local_visited):
+        if neighbor == parent:
+            continue
+        if has_cycle_helper(graph, neighbor, visited, local_visited, starting_vertex):
             return True
     return False
 

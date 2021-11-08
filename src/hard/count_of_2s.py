@@ -69,5 +69,5 @@ def digits_count(number: int) -> int:
 	return count
 
 
-print(counts_of_two(25))
+print(counts_of_two(1321))
 import pdb;pdb.set_trace()

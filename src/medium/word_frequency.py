@@ -32,18 +32,18 @@ from typing import Dict, Iterable, Union, Any
 import re
 
 
-TrieNode = Dict[str, Dict[str, Any]]
+TrieNode = Dict[str, Any]
 
 
 class Trie:
 	
 	def __init__(self) -> None:
-		self.trie: TrieNode = {'': {'children': {}, 'count': 0}}
+		self.trie: TrieNode = {'children': {}, 'count': 0}
 
 	def insert(self, word: str) -> None:
-		self._insert_helper(self.trie[''], word)
+		self._insert_helper(self.trie, word)
 
-	def _insert_helper(self, node: Any, 
+	def _insert_helper(self, node: TrieNode, 
 					   word: str) -> None:
 		if not word:
 			node['count'] += 1
@@ -61,9 +61,9 @@ class Trie:
 		""" Finds the number of 
 			occurencies of word 
 		"""
-		return self._search_helper(self.trie[''], word)
+		return self._search_helper(self.trie, word)
 
-	def _search_helper(self, node: Any, word: str) -> int:
+	def _search_helper(self, node: TrieNode, word: str) -> int:
 		if not word:
 			return node['count']
 		curr_char: str = word[0]

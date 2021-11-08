@@ -57,11 +57,11 @@ def right_size(pivot: int, end: int) -> int:
 
 def partition(numbers: List[int], start: int, 
 			  end: int, pivot: int) -> int:
-	print(start, end, pivot)
+	print(start, end, pivot, numbers)
 	pivot_value: int = numbers[pivot]
 	while start <= end:
 		
-		while numbers[start] <= pivot_value and start <= end:
+		while numbers[start] < pivot_value:
 			start += 1
 		while numbers[end] > pivot_value:
 			end -= 1
@@ -70,6 +70,7 @@ def partition(numbers: List[int], start: int,
 			numbers[start], numbers[end] = numbers[end], numbers[start]
 			start += 1
 			end -= 1
+	print(numbers)
 	return start
 
 
