@@ -27,10 +27,10 @@ def missing_one_number(numbers: List[int]) -> int:
 
 
 def missing_two_numbers(numbers: List[int]) -> Tuple[int, int]:
-    sum_of_missing: int = get_sum_of_missing(numbers)  #TODO
-    product_of_missing: int = get_product_of_missing(numbers)  #TODO
-    y: int = int(math.sqrt(product_of_missing/sum_of_missing))
-    x: int = sum_of_missing - y
+    sum_: int = get_sum_of_missing(numbers)
+    product: int = get_product_of_missing(numbers)
+    y: int = int(-sum_ - math.sqrt(sum_**2 - 4 * product))//-2
+    x: int = int(-sum_ + math.sqrt(sum_**2 - 4 * product))//-2
     return x, y
 
 
@@ -40,7 +40,7 @@ def get_sum_of_missing(numbers: List[int]) -> int:
 
 
 def get_product_of_missing(numbers: List[int]) -> int:
-    return product(range(1, len(numbers) + 3)) - product(numbers)
+    return product(range(1, len(numbers) + 3)) // product(numbers)
 
 
 def product(numbers: Iterable[int]) -> int:
