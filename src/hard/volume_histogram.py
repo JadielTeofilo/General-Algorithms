@@ -80,6 +80,6 @@ def find_last_bar(bars: List[int]) -> int:
 
 print(
 	volume(
-		[0,0,4,0,0,6,0,0,3,0,5,0,1,0,0,0]
+		[0,0,4,0,0,6]
 	)	
 )
