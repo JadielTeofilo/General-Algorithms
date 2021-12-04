@@ -14,11 +14,15 @@ Out - Sum
 We could use two heaps, one max, other min 
 Or just iterate on the array keeping track of min and max
 	The comparison num here is 2*n
-Or use divide and conquer
+Or use divide and conquer approach 
+
 T(n) = 2 + 2*T(n/2)
 ...
-T(2) = 1
+T(2) = 1  # There will be n/2 elements like these, above it we have n/2+n/4+n/8 ...n/n comparisons
 T(1) = 0
+
+This will be a bit over n comparisons, which is better than 2*n
+The whole point is to save comparisons by doing only one to check the min and max
 
 
 
@@ -42,19 +46,37 @@ Return an integer denoting the sum Maximum and Minimum element in the given arra
 
 
 """
+import collections
 import math
-from typing import Union
+from typing import Union, List
+
+
+Edges = collections.namedtuple('Edges', 'min max')
 
 
 class Solution:
 	# @param A : list of integers
 	# @return an integer
-	def solve(self, A) -> int:
-		min_: Union[float, int] = math.inf
-		max_: Union[float, int] = -math.inf
-		for number in A:
-			if number < min_:
-				min_ = number
-			if number > max_:
-				max_ = number
-		return int(max_ + min_)
+        def solve(self, numbers: List[int]) -> int:
+            edges: Edges = self.get_max_min(
+                numbers, start=0, end=len(numbers) - 1
+            )
+            return edges.max + edges.min
+
+        def get_max_min(self, numbers: List[int], start: int, 
+                        end: int) -> Edges:
+            if start >= end:
+                return Edges(numbers[start], numbers[start])
+            # Case list has size 2
+            if end - start == 1:
+                if numbers[start] > numbers[end]:
+                    return Edges(numbers[end], numbers[start])
+                else:
+                    return Edges(numbers[start], numbers[end])
+            pivot: int = (start + end) // 2
+            left_edges: Edges = self.get_max_min(numbers, start, pivot)
+            right_edges: Edges = self.get_max_min(numbers, pivot + 1, end)
+            return Edges(min(left_edges.min, right_edges.min),
+                         max(left_edges.max, right_edges.max))
+
+

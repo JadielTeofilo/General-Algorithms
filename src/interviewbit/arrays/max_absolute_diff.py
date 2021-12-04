@@ -20,7 +20,8 @@ class Solution:
 	def maxArr(self, numbers: List[int]) -> int:
 		added_nums: List[int] = self.find_added(numbers) 
 		sub_nums: List[int] = self.find_sub(numbers) 
-		return max(added_nums) - min(sub_nums)
+		return max((max(added_nums) - min(added_nums)), 
+                   (max(sub_nums) - min(sub_nums)))
 
 	def find_added(self, numbers: List[int]) -> List[int]:
 		return [number + i for i, number in enumerate(numbers)]
