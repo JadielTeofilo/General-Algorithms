@@ -19,21 +19,26 @@ Return 0 if the array contains less than 2 elements.
 
 1 2 5 8 9 10 12
 
-get max and min elements
-iterate from min to max
-skip elements outside of set(numbers)
-keep track of max distance
+get min and max
+build buckets the size of min_gap
+min_gap is (max - min)//N-1
 
-
-O(m) time cmplxt where m is the range of numbers
-O(n) space where n is the size of numbers
 
 In - numbers: List[int]
 Out - int
 
 
 """
+import dataclasses
 from typing import List, Set
+
+
+@dataclasses.dataclass
+class Bucket:
+    max_number: Optional[int]
+    min_number: Optional[int]
+    start: int 
+    end: int
 
 
 class Solution:
@@ -42,15 +47,26 @@ class Solution:
     def maximumGap(self, numbers: List[int]) -> int:
         if len(numbers) < 2:
             return 0
-        min_number: int = min(numbers)
-        max_number: int = max(numbers)
-        numbers_hash: Set[int] = set(numbers)
+        buckets: List[Buckets] = self.build_buckets(numbers)  # TODO
+        self.fill_buckets(buckets, numbers)  #TODO
         max_gap: int = 0
-        last: int = min_number
-        for number in range(min_number + 1, max_number + 1):
-            if number not in numbers_hash:
-                continue
-            max_gap = max(max_gap, number - last)
-            last = number
+        last: Bucket = buckets[0]
+        for bucket in buckets[1:]:
+            max_gap = max(max_gap, bucket.min_number - last.max_number)
+            last = bucket
         return max_gap
-            
+          
+    def build_buckets(self, numbers: List[int]) -> List[Bucket]:
+        max_: max(numbers) 
+        min_: min(numbers)
+        min_gap: int = (max_ - min_) // len(number) - 1 
+        buckets: List[Bucket] = []
+        for number in range(min_, max_+1, min_gap):
+            # Non inclusive at end
+            buckets.append(Bucket(None, None, number, number + min_gap))
+        return buckets
+
+    def fill_buckets(buckets: List[Bucket], numbers: List[int]) -> None:
+       
+
+
