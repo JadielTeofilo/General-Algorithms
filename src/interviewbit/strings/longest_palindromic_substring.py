@@ -30,6 +30,10 @@ In - word: str
 Out - str
 
 consider all possible middle points for the palindrome
+The main point is to find the mid point of the desired palindrome 
+with the mid point it is possible to expand to both sides while valid
+
+
 
 abac
 0123
