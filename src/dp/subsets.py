@@ -52,4 +52,21 @@ def build_subsets(base_subsets: List[Set[int]],
 	return new_subsets
 
 
-import pdb;pdb.set_trace()
+"""
+Recursive version
+
+Either use the element or dont
+1 4 2 3
+                                _
+            1                                   _
+    4               _               4                   _
+2       _       2       _       2       _           2       _
+3 _     3 _     3 _     3 _    3 _     3  _        3  _    3  _
+
+
+solve(result: List[List[int]], )
+"""
+
+
+
+
