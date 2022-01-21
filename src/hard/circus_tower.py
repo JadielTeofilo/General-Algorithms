@@ -45,7 +45,7 @@ def circus_tower(people: List[Person]) -> int:
 		people, cache, index=0, 
 	)
 
-
+# TODO Fix this, its flawed, should follow a combinations implementation
 def circus_tower_helper(
 	people: List[Person], 
 	cache: Dict[Person, int], 
@@ -77,7 +77,7 @@ Person(2, 3),
 Person(5, 1),
 Person(2, 1),
 Person(7, 4),
-Person(8, 3),
+Person(8, 1),
 ]
 ))
 
