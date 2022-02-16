@@ -74,7 +74,7 @@ class Solution:
         for index, seat in enumerate(places):
             if index == 0:
                 continue
-            counter += self.update_places(places, index)
+            counter += self.update_places(places, index) % 10000003
 
         return counter
 
@@ -88,7 +88,7 @@ class Solution:
             # Brings the right element to the left
             places[index] = places[index - 1] + 1 
             return diff - 1
-        return diff * (prefix + 1)
+        return (diff - 1) * (prefix + 1)
 
 
 

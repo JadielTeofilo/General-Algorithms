@@ -43,6 +43,8 @@ class Solution:
 		suffix: List[Cache] = self.build_suffix(numbers)
 		max_product: Union[int, float] = -math.inf
 		for index, number in enumerate(numbers): 
+			if index in [0, len(numbers) - 1]:
+				continue
 			max_product = max(
 				max_product, 
 				number * prefix[index].min * suffix[index].max,
@@ -53,7 +55,7 @@ class Solution:
 		return int(max_product)
 
 	def build_prefix(self, numbers: List[int]) -> List[Cache]:
-		prefix: List[Cache] = [Cache(1, 1)] * len(numbers)
+		prefix: List[Cache] = [Cache(math.inf, -math.inf)] * len(numbers)
 		for i in range(1, len(numbers)):
 			prefix[i] = Cache(min=min(numbers[i-1], prefix[i-1].min),
 							  max=max(numbers[i-1], prefix[i-1].max))
@@ -61,7 +63,7 @@ class Solution:
 
 
 	def build_suffix(self, numbers: List[int]) -> List[Cache]:
-		suffix: List[Cache] = [Cache(1, 1)] * len(numbers)
+		suffix: List[Cache] = [Cache(math.inf, -math.inf)] * len(numbers)
 		for i in range(len(numbers)-2, -1, -1):
 			suffix[i] = Cache(min=min(numbers[i+1], suffix[i+1].min),
 							  max=max(numbers[i+1], suffix[i+1].max))
