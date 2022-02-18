@@ -41,16 +41,40 @@ O(m) space complexity
 
 Better approach 
 
-    abbab
-   011111
+Build a matrix that for a given row gives the answer for word[:col], target[:row]
+recurrence is dp[row][col] = dp[row][col - 1] + dp[row - 1][col - 1]
+
+
+ 
+	abbab
+   111111
   a011122
   b001224
 
+we keep two lists of size len(word) + 1
+[011111]
+[000000]
+we iterate on range(len(words)) * range(len(target))
+if word[col] == target[row]
+dp[1][col+1] = dp[1][col] + dp[0][col]
+else
+dp[1][col+1] = dp[1][col]
+
+case 1). if T[i] != S[j], then the solution would be to ignore the character S[j] and align substring T[0..i] with S[0..(j-1)]. Therefore, dp[i][j] = dp[i][j-1].
+
+case 2). if T[i] == S[j], then first we could adopt the solution in case 1), but also we could match the characters T[i] and S[j] and align the rest of them (i.e. T[0..(i-1)] and S[0..(j-1)]. As a result, dp[i][j] = dp[i][j-1] + d[i-1][j-1]
+
+
+we can keep only the curr and last row to solve it in:
+
+O(m*n) time complexity where n = len(word) m = len(target)
+O(m) space complexity 
+
 """
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List, Iterable
 
 
-Cache = Dict[Tuple[int, int], int]
+Matrix = List[List[int]]
 
 
 class Solution:
@@ -58,3 +82,16 @@ class Solution:
 	# @param B : string
 	# @return an integer
 	def numDistinct(self, word: str, target: str)-> int:
+		dp: List[List[int]] = [[1] * (len(word) + 1), 
+							   [0] * (len(word) + 1)]
+
+		for row in range(len(target)):
+			for col in range(len(word)):
+				if word[col] == target[row]:
+					dp[1][col+1] = dp[1][col] + dp[0][col]
+				else:
+					dp[1][col+1] = dp[1][col]
+			dp[0] = dp[1].copy()
+			dp[1] = [0] * (len(word) + 1)
+		return dp[1][-1]
+
