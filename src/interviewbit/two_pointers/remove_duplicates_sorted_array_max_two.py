@@ -13,10 +13,10 @@ Your function should return length = 3, and A is now [1,1,2].
 
 
 
-         _
-112355666N
-        -
-_
+    _
+1111235566N
+  -
+11235566
 
 -
 
@@ -40,20 +40,17 @@ class Solution:
     # @return an integer
     def removeDuplicates(self, numbers: List[Optional[int]]) -> int:
         left: int = 0
-        moves: int = 0
         last: Optional[int] = None
-        #     _
-        # 111122334
-        # -
-        for number in numbers:
-            if number == last:
-                moves += 1
+        prev: Optional[int] = None
+        #       _
+        # 0 0 1 1 1 2 2 3
+        #     -
+        for i, number in enumerate(numbers):
+            if number == last and number == prev:
                 continue
-            skip: int = 1 if moves < 2 else 2
-            left += skip
             numbers[left] = number
-            numbers[left - 1] = last
-            moves = 0
-            last = number
+            prev = last  # 0
+            last = number  # 0
+            left += 1
         return left
             
