@@ -59,22 +59,37 @@ class TreeNode:
     right: Optional['TreeNode'] = None
 
 
+# Segment tree of the sum of empty slots
 class SegmentTree:
 
-    def __init__(self):
+    def __init__(self, size: int):
         self.root: TreeNode = None
+        self.build_tree(size)
 
-    def build_tree(self, nums: List[int]) -> None:
-        pass
+    def build_tree(self, size: int) -> None:
+        self.root = TreeNode(Interval(0, size - 1), size)
+        self.build_tree_helper(self.root)
 
-    def update_tree(self, index: int) -> int:
-        return self.update_tree_helper(index, self.root)
+    def build_tree_helper(self, node: TreeNode) -> None:
+        if node.start == node.end:
+            return
+        mid: int = (node.start + node.end) // 2
+        # IMPORTANT CUZ MID IS INCLUSIVE TO THE RIGHT
+        if mid > 0:
+            node.left = TreeNode(Interval(node.start, mid - 1), mid - node.start)
+        node.right = TreeNode(Interval(mid, node.end), node.end - mid + 1)
 
-    def update_tree_helper(self, target_index: int, node: TreeNode) -> int:
-        if node.interval.start == node.interval.end - 1:
-            return node.interval.start
-        if
-            
+    def update_tree_by_index(self, index: int) -> int:
+        return self.update_tree_helper(index, self.root, 0)
+
+    def update_tree_helper(self, target_index: int, node: TreeNode, curr: int) -> int:
+        if node.interval.start == node.interval.end:
+            return node.val
+        node.val -= 1
+        mid: int = (node.start + node.end) // 2
+        if target_index < mid:
+            return self.update_tree_helper(target_index, node.left, curr)
+        return self.update_tree_helper(target_index, node.right, curr + node.left.val)
 
 
 class Solution:
@@ -85,8 +100,9 @@ class Solution:
         nums_heights: List[Tuple[int, int]] = list(zip(nums, heights))
         nums_heights.sort()
         result: List[Optional[int]] = [None] * len(nums)
+        tree: SegmentTree(len(nums))
         for num, height in nums_heights:
-            index: int = self.find_index(result, height)
+            index: int = self.find_index(result, height, tree)
             result[index] = num
         return result
 
@@ -98,6 +114,10 @@ class Solution:
             if count == height + 1:
                 return index
         raise ValueError('Index not found')
+
+    def fast_find_index(self, slots: List[Optional[int]], height: int, 
+                        tree: SegmentTree) -> int:
+
     
     
             
