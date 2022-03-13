@@ -58,8 +58,8 @@ class Solution:
         tree: BIT = BIT(len(sums_sorted))
         result: int = 0
         for running_sum in running_sums:
-            new_start: int = upper - running_sum
-            new_end: int = lower - running_sum
+            new_start: int = running_sum - upper
+            new_end: int = running_sum - lower
             result += (tree.query(self.bisect_right(sums_sorted, new_end)) - 
                        tree.query(self.bisect_left(sums_sorted, new_start)))
             tree.update(rank[running_sum] + 1, 1)
@@ -80,9 +80,9 @@ class Solution:
         while start < end:
             mid: int = (start + end) // 2
             if nums[mid] > target: 
-                end = mid - 1
+                end = mid
             else:
-                start = mid
+                start = mid + 1
         return start
 
     def build_running_sums(self, nums: List[int]) -> List[int]:
