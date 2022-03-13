@@ -17,11 +17,22 @@ BIT[x] =                    a[1] + ... + a[x],     if x is power of 2
 
 """
 
-def update(bit: List[int], index: int, value: int) -> None:
-    while index < len(bit):
-        bit[index] += value
-        index += index & -index
 
-def query(bit: List[int], index: int) -> int:
-    result: int = 0
+class BIT:
+
+    def __init__(self, size) -> None:
+        self.tree = List[int] = [0] * (size + 1)
+
+    def update(self, index: int, value: int) -> None:
+        while index < len(self.tree):
+            self.tree[index] += value
+            index += index & -index  # Givest the last set bit
+
+    def query(self, index: int) -> int:
+        result: int = 0
+        while index > 0:
+            result += self.tree[index]
+            index -= index & -index
+        return result
+
 
