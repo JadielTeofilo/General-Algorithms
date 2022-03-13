@@ -11,17 +11,14 @@ You need to find the minimum time required to burn the complete binary tree.
            2   3 
           /   / \
          4   5   6
-1
-3
 
+1
+6
+
+2
 
 5
 
-The catch is that its easy to know how long it would take from the root, its just the depth of the tree, 
-we iterate on the tree adding: depth data, if the burn is coming from bellow curr node, time the fire took to get here
-
-O(n) time where n is nodes
-O(1) space
 
 the other easier way is to keep track of all parent relations, and handle the problem as a graph, bfs keeping visited and all
 
@@ -33,6 +30,9 @@ add parent, left, right to queue using bfs
 
 
 """
+import collections
+from typing import List, Dict, Optional, Set
+
 # Definition for a  binary tree node
 class TreeNode:
     def __init__(self, x):
@@ -45,11 +45,43 @@ class Solution:
     # @param B : integer
     # @return an integer
     def solve(self, root: TreeNode, value: int) -> int:
-        parents: Dict[int, TreeNode] = self.build_parents(root)  # TODO
-        node: TreeNode = self.find_node(root, value)  # TODO
+        parents: Dict[int, Optional[TreeNode]] = {}
+        self.build_parents(root, parents)
+        node: Optional[TreeNode] = self.find_node(root, value)
         visited: Set[int] = set()
         queue = collections.deque()
-        queue.append(node)
+        # Its a bfs where we keep track of the layer number we`re at
+        queue.append((node, 0))
         time: int = 0
         while queue:
+            curr, layer = queue.popleft()
+            if not curr:
+                continue
+            has_new_neighbor: bool = False
+            time = max(layer, time)
+            for neighbor in [curr.left, curr.right, parents[curr.val]]:
+                if neighbor is not None and neighbor.val not in visited:
+                    visited.add(neighbor.val)
+                    queue.append((neighbor, layer + 1))
+        return time
+
+    def build_parents(self, node: Optional[TreeNode], 
+                      parents: Dict[int, Optional[TreeNode]], 
+                      parent: Optional[TreeNode] = None) -> None:
+        if not node:
+            return
+        self.build_parents(node.left, parents, node)
+        parents[node.val] = parent
+        self.build_parents(node.right, parents, node)
+    
+    def find_node(self, node: Optional[TreeNode], value: int) -> Optional[TreeNode]:
+        if not node:
+            return
+        if node.val == value:
+            return node
+        found_left: TreeNode = self.find_node(node.left, value)
+        if found_left is not None:
+            return found_left
+        return self.find_node(node.right, value)
+
 
