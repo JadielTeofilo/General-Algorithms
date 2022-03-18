@@ -44,63 +44,43 @@ O(n) space
 
 """
 import collections
-import dataclasses
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Optional
 
 
 Interval = collections.namedtuple('Interval', 'start end')
 
 
-@dataclasses.dataclass
-class TreeNode:
-    interval: Interval
-    val: Optional[int] = None
-    left: Optional['TreeNode'] = None
-    right: Optional['TreeNode'] = None
-
-
 # Segment tree of the sum of empty slots
-class SegmentTree:
+class BIT:
 
-    def __init__(self, size: int):
-        self.root: TreeNode = None
-        self.build_tree(size)
+    def __init__(self, size: int) -> None:
+        self.tree: List[int] = [0] * (size + 1)
 
-    def build_tree(self, size: int) -> None:
-        self.root = TreeNode(Interval(0, size - 1), size)
-        self.build_tree_helper(self.root)
+    def update(self, index: int, value: int) -> None:
+        while index < len(self.tree):
+            self.tree[index] += value
+            index += index & -index
 
-    def build_tree_helper(self, node: TreeNode) -> None:
-        if node.start == node.end:
-            return
-        mid: int = (node.start + node.end) // 2
-        # IMPORTANT CUZ MID IS INCLUSIVE TO THE RIGHT
-        if mid > 0:
-            node.left = TreeNode(Interval(node.start, mid - 1), mid - node.start)
-        node.right = TreeNode(Interval(mid, node.end), node.end - mid + 1)
-
-    def update_tree_by_index(self, index: int) -> int:
-        return self.update_tree_helper(index, self.root, 0)
-
-    def update_tree_helper(self, target_index: int, node: TreeNode, curr: int) -> int:
-        if node.interval.start == node.interval.end:
-            return node.val
-        node.val -= 1
-        mid: int = (node.start + node.end) // 2
-        if target_index < mid:
-            return self.update_tree_helper(target_index, node.left, curr)
-        return self.update_tree_helper(target_index, node.right, curr + node.left.val)
+    def query(self, index: int) -> int:
+        result: int = 0
+        while index > 0:
+            result += self.tree[index]
+            index -= index & -index
+        return result
 
 
 class Solution:
     # @param A : list of integers
     # @param B : list of integers
     # @return a list of integers
-    def order(self, nums: List[int], heights: List[int]) -> List[int]:
+    def order(self, nums: List[int], heights: List[int]) -> List[Optional[int]]:
         nums_heights: List[Tuple[int, int]] = list(zip(nums, heights))
         nums_heights.sort()
         result: List[Optional[int]] = [None] * len(nums)
-        tree: SegmentTree(len(nums))
+        tree: BIT = BIT(len(nums))
+        # Fills the tree of slots
+        for index in range(1, len(nums) + 1):
+            tree.update(index, 1)
         for num, height in nums_heights:
             index: int = self.find_index(result, height, tree)
             result[index] = num
@@ -115,8 +95,24 @@ class Solution:
                 return index
         raise ValueError('Index not found')
 
-    def fast_find_index(self, slots: List[Optional[int]], height: int, 
-                        tree: SegmentTree) -> int:
+    def find_index(self, slots: List[Optional[int]], height: int, 
+                   tree: BIT) -> int:
+        start, end = 1, len(slots)
+        index: int = -1
+        while start <= end:
+            mid: int = (start + end) // 2
+            curr: int = tree.query(mid)
+            if curr > height + 1:
+                end = mid - 1
+            elif curr < height + 1:
+                start = mid + 1
+            else:
+                index = mid
+                break
+        tree.update(index, -1)
+        return index - 1
+
+        
 
     
     
