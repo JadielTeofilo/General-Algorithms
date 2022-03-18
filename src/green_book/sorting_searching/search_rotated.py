@@ -40,7 +40,7 @@ def search_helper(numbers: List[int], target: int,
 	mid: int = (start + end) // 2
 	if numbers[mid] == target:
 		return mid
-	if numbers[mid] >= numbers[end]:
+	if numbers[start] >= numbers[end]:
 		left_search: int = search_helper(numbers, target, 
 										start, mid - 1)
 		right_search: int = search_helper(

@@ -10,38 +10,76 @@ Your aim is to minimise this cost. Return an array denoting the sequence in whic
 
 Brute force
 
-try cutting on every position and call the recursion on it
+try cutting on every position from start to end and call the recursion on it
+    we sort the cuts so we know which cuts can be done 
+
+stop when start > end return 0
 
 iterate on cut positions, and call solve on the new start, end
+left_max = solve(start=cut + 1, end=end, curr_cuts=curr_cuts + [cut])
+right_max = solve(start=start, end=cut - 1, curr_cuts=curr_cuts + [cut])
+min_cost = min(min_cost, left_max + right_max)
 
 memoize the start, end position
 
-O(n^2*m) time complexity where n is the size of the list and m is the size of cuts
+O(m^3) time complexity where m is the size of cuts
+O(m^2) space complexity 
 
 
 In - cuts: List[int], size: int
-Out - List[int]
+Out - int
 
 """
 import math
-from typing import List
+from typing import List, Dict, Iterable, Tuple, Union
+
+
+Cache = Dict[Tuple[int, int], int]
 
 
 class Solution:
-	# @param A : integer
-	# @param B : list of integers
-	# @return a list of integers
-	def rodCut(self, size: int, cuts: List[int]) -> int:
-		return self.get_best_cuts(1, size, cuts, {})[1]
+    def minCost(self, size: int, cuts: List[int]) -> int:
+        cuts.sort()
+        return self.find_min_cost(cuts, size, start=0, 
+                                  end=size, cache={})
 
+    def find_min_cost(self, cuts: List[int], size: int, start: int, 
+                      end: int, cache: Cache) -> int:
+        # n = 7, cuts = [1,3,4,5]
+        """
+        0 1 2 3 4 5 6 7
 
-	def get_best_cuts(self, start: int, end: int, cuts: List[int], 
-					  cache: Dict[int, int]) -> Tuple[int, List[int]]:
-		if start >
-		best_cuts: List[int] = []
-		min_cost: Union[int, float] = math.inf
-		for cut in cuts:
-			if cut < start or cut > end:
-				continue
-			new_cost, path = self.get_best_cuts(start=start, end=cut)
+        7 + solve(0, 1) -> 0
+            solve(1, 7) 
+                6 + solve(1,3) -> 0
+                    solve(3,7)
+                        4 + solve(3,4) -> 0
+                            solve(4,7)
+        """
+        if start >= end:  # 0 7 
+            return 0
+        if (start, end) in cache:
+            return cache[(start, end)]
+        min_cost: Union[int, float] = math.inf
+        for cut in self.get_possible_cuts(start, end, cuts):
+            left_min: int = self.find_min_cost(
+                cuts, size, start=start, end=cut, cache=cache
+            )
+            right_min: int = self.find_min_cost(
+                cuts, size, start=cut, end=end, cache=cache
+            )
+            min_cost = min(min_cost, end - start + left_min + right_min)
+        # Handles the case with no cuts
+        if min_cost == math.inf:
+            min_cost = 0
+        cache[(start, end)] = min_cost
+        return min_cost
 
+    def get_possible_cuts(self, start: int, end: int, 
+                          cuts: List[int]) -> Iterable[int]:
+        for cut in cuts:
+            if cut <= start:
+                continue
+            if cut >= end:
+                break
+            yield cut

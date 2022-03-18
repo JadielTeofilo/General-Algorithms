@@ -81,13 +81,16 @@ def find_path(queue: Queue, visited: Dict[str, PathData],
 
 
 def get_generic_variations(word: str) -> Iterable[str]:
+
     for i in range(len(word)):
         yield word[:i] + '_' + word[i+1:]
+        yield word[:i] + '_' + word[i:]
+    yield word + '_'
 
-
+print(list(get_generic_variations('abc')))
 print(
     word_transformer(
-        'damp', 'like', ['damp', 'lamp', 'dump', 'dimp', 'divp', 'dive', 'lime', 'dime', 'like', 'limp']
+        'damp', 'lie', ['damp', 'lamp', 'dump', 'dimp', 'divp', 'dive', 'lime', 'dim', 'lie', 'lim']
     )
 )
 
