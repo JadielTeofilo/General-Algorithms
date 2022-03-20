@@ -20,7 +20,7 @@ for the post order, check if there is a left side, if so send the nums[:-1] to l
 
 
 O(n) time complexity
-O(1) space 
+O(n) space 
 
 In - in_order: List[int], post_order: List[int]
 Out - TreeNode
@@ -37,7 +37,7 @@ class TreeNode:
         self.right = None
 
 
-Boundery = collections.namedtuple('Boundery', 'start end')
+Limit = collections.namedtuple('Limit', 'start end')
 
 
 class Solution:
@@ -45,35 +45,47 @@ class Solution:
     # @param B : list of integers
     # @return the root node in the tree
     def buildTree(self, in_order: List[int], 
-                    post_order: List[int]) -> Optional[TreeNode]:
-            self.indexes: Dict[int, int] = {
-                num: i for i, num in enumerate(in_order)
-            }
-            return self.build_from_order(
-                Boundery(0, len(in_order) - 1), in_order, 
-                Boundery(0, len(post_order) - 1), post_order
-            )
+                  post_order: List[int]) -> Optional[TreeNode]:
+        indexes: Dict[int, int] = {
+            num: i for i, num in enumerate(in_order)
+        }
+        post_order_end: Dict[str, int] = {'val': len(post_order) - 1}
+        return self.build_tree_helper(
+            in_order, post_order, indexes,
+            Limit(0, len(in_order) - 1), post_order_end,
+        )
 
-    def build_from_order(
-            self, boundery_in: Boundery, in_order: List[int],
-            boundery_post: Boundery, post_order: List[int]
-    ) -> Optional[TreeNode]:
-        if boundery_in.start > boundery_in.end:
+    def build_tree_helper(self, in_order: List[int], post_order: List[int], 
+                          indexes: Dict[int, int], limit: Limit, 
+                          po_end: Dict[str, int]) -> Optional[TreeNode]:
+        """
+
+        inor : [ 2, 1, 3 ]
+        
+        post : [ 2, 3, 1 ]
+
+        limit 0 - 2
+        limit 0 - 0, 2 - 2
+
+        """
+        if limit.start > limit.end:
             return None
-        root_val: int = post_order[boundery_post.end]
-        root_index: Optional[int] = self.indexes.get(root_val, None)
-        if not root_index:
+        root_value: int = post_order[po_end['val']]
+        root_index: Optional[int] = indexes.get(root_value, None)
+        if root_index > limit.end or root_index < limit.start:
             return None
-        current: TreeNode = TreeNode(root_val)
-        current.left = self.build_from_order(
-            Boundery(boundery_in.start, root_index - 1), in_order, 
-            Boundery(boundery_post.start, boundery_post.end - 1), 
-            post_order
+        po_end['val'] -= 1
+        curr: TreeNode = TreeNode(root_value)
+        curr.right = self.build_tree_helper(
+            in_order, post_order, indexes,
+            Limit(root_index + 1, limit.end), po_end
         )
-        new_boundery_post_end: int = (boundery_post.end - 
-                                    (2 if current.left else 2))
-        current.right = self.build_from_order(
-            Boundery(root_index + 1, boundery_in.end), in_order, 
-            Boundery(boundery_post.start, new_boundery_post_end), post_order
+        curr.left = self.build_tree_helper(
+            in_order, post_order, indexes,
+            Limit(limit.start, root_index - 1), po_end
         )
-        return current
+        return curr
+
+
+
+
