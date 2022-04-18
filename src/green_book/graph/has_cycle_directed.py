@@ -28,6 +28,7 @@ def has_cycle_helper(graph: neat_graph.Graph,
             continue
         if has_cycle_helper(graph, neighbor, visited, local_visited, starting_vertex):
             return True
+    local_visited.remove(starting_vertex)
     return False
 
 
