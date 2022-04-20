@@ -23,47 +23,49 @@ essess
 a
 2
 
+The idea is to work like a program would with the calls being stacked
+
+
+case [ (we put the old values on the stack and set new ones)
+    we put curr_word in the stack
+    we put curr_k in the stack
+
+case alpha
+    we add to curr_word
+case digit
+    we add to curr_k
+
+case ]
+    we get the last k pop()
+    we get the curr_word 
+    make curr_word be stack.pop() + curr_word * k
+
 
 
 In - encoded: str
 Out - str
 
 """
-import dataclasses
-from typing import List
-
-
-@dataclasses.dataclass
-class StackValue:
-    k: int
-    words: List[str]
+from typing import List, Union
 
 
 class Solution:
     def decodeString(self, encoded: str) -> str:
-        stack: List[StackValue] = []
-        result: List[str] = []
+        stack: List[Union[str, int]] = []
+        curr_k: int = 0
+        curr_word: str = ''
         for char in encoded:
-            if char.isdigit():
-                if not stack or stack[-1].words:
-                    stack.append(StackValue(0, []))
-                curr: StackValue = stack[-1]
-                curr.k = curr.k * 10 + int(char)
-                curr.words.append(char)
-                continue
-            if char == '[':
-                continue
-
             if char.isalpha():
-                curr_word: str = char
-            if char == ']':
-                curr_word: str = self.get_word(stack[-1])
-            if not stack:
-                result.append(curr_word)
-            else:   
-                stack[-1].words.append(curr_word)
-        return ''.join(result)
-    
-    def get_word(self, stack_value: StackValue) -> str:
-        return ''.join(stack_value.words) * stack_value.k
-        
+                curr_word += char
+            elif char.isdigit():
+                curr_k = curr_k * 10 + int(char)
+            elif char == '[':
+                stack.append(curr_word)
+                stack.append(curr_k)
+                curr_word, curr_k = '', 0
+            elif char == ']':
+                last_k: Union[int, str] = stack.pop()
+                last_word: Union[int, str] = stack.pop()
+                curr_word = last_word + curr_word * last_k
+        return curr_word
+                
