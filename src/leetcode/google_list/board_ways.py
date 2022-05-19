@@ -43,4 +43,41 @@ dp[i] =
     2 * dp[i - 2] when last block has height 2 (there are two ways of doing it)
     3 * dp[i - 3] when last block has hiehgt 3 (there are three ways of doing it (excluding 3 1x3s cuz its covered by above cases))
 
+O(n) time complexity
+O(n) space complexity (can be improved by only keeping the last 3 results)
+
+to further improve the time complexity we can apply the Pattern DP Split
+
+The particularity is that dp[n] is not just dp[n/2]*dp[n/2] on even n`s
+    this happens cuz there is also the combinations between the two halfs
+
+
+at the index n/2 you could have
+    the end of blocks
+    the start of a 2x3 block
+    the start of a size 3 block (4 options)
+    the middle of a size 3 block (4 options)
+
+for odd cases just distribute f(n) = f(n//2)*f(n//2 + 1) with the possible combinations in beetween
+
+memoize to keep the time complexity in O(log n)
+
 """
+from typing import List 
+
+
+class Solution:
+
+    def solve(self, height: int) -> int:
+        if height < 0:
+            return -1
+        if height <= 2:
+            return height 
+        dp: List[int] = [1] * (height + 1)
+        dp[1], dp[2], dp[3] = 1, 2, 7
+        for curr in range(4, height + 1):
+            dp[curr] = dp[curr - 1] + 3 * (dp[curr - 2] + dp[curr - 3])
+        return dp[-1]
+
+
+import pdb;pdb.set_trace()
