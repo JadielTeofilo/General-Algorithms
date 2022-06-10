@@ -8,20 +8,11 @@ You may assume that the input string is always valid; there are no extra white s
 Furthermore, you may assume that the original data does not contain any digits and that digits are only for those repeat numbers, k. For example, there will not be input like 3a or 2[4].
 
 
-2[a2[sse]]1[d]e
+qwe2[a2[sse]]1[d]e
 
-asssasssde
+qweasssasssde
 
-solve(encoded)
-
-use a stack to get the inner elements
-
-ssesse
-essess
-
-2
-a
-2
+Problem with number having more than one digit
 
 The idea is to work like a program would with the calls being stacked
 
@@ -40,6 +31,8 @@ case ]
     we get the curr_word 
     make curr_word be stack.pop() + curr_word * k
 
+O(max K * n) time complexity where K if the digit multiplier n is the size of the string
+O(m + n) space where m is num of digits in the input and n the num of letters
 
 
 In - encoded: str
@@ -55,17 +48,17 @@ class Solution:
         curr_k: int = 0
         curr_word: str = ''
         for char in encoded:
-            if char.isalpha():
-                curr_word += char
+            if char == '[':
+                stack.append(curr_k)
+                stack.append(curr_word)
+                curr_k = 0
+                curr_word = ''
             elif char.isdigit():
                 curr_k = curr_k * 10 + int(char)
-            elif char == '[':
-                stack.append(curr_word)
-                stack.append(curr_k)
-                curr_word, curr_k = '', 0
+            elif char.isalpha():
+                curr_word = curr_word + char
             elif char == ']':
-                last_k: Union[int, str] = stack.pop()
-                last_word: Union[int, str] = stack.pop()
-                curr_word = last_word + curr_word * last_k
+                last_word: Union[str, int] = stack.pop()
+                last_k: Union[str, int] = stack.pop()
+                curr_word = last_word + (curr_word * last_k)
         return curr_word
-                
