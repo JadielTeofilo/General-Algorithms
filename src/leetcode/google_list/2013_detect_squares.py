@@ -29,7 +29,8 @@ Implement the DetectSquares class:
 
 
 
-for the query point, find points that make a line of 45degree
+given the query point, find points that make a line of 45degree
+remember to check p1.x == p2.x
 
 abs(p1.x - p2.x) == abs(p1.y - p2.y)
 

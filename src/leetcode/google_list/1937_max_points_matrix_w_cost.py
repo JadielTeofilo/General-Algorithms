@@ -40,13 +40,25 @@ from typing import List
 
 class Solution:
     def maxPoints(self, points: List[List[int]]) -> int:
+        """
+        [[4,4,2,2,1],
+         [5,5,2,1,2],
+         [3,1,5,5,2],
+         [3,2,0,0,3]]
+
+        [[0,1,1,1,1], 
+         [0,1,1,1,1],
+         [2,2,2,3,3], 
+         [0,0,0,0,4]]
+
+        """
         cache: List[List[int]] = build_cache(points)
         result: int = 0
         for fixed_col in range(len(points[0])):
             last_col: int = fixed_col
             curr_sum: int = points[0][fixed_col]
             for row in range(1, len(points)):
-                curr_sum += points[row][cache[row][last_col]]
+                curr_sum += points[row][cache[row][last_col]] - abs(cache[row][last_col] - last_col)
                 last_col = cache[row][last_col]
             result = max(result, curr_sum)
         return result
@@ -67,7 +79,7 @@ def build_cache(points: List[List[int]]) -> List[List[int]]:
                 curr_max -= 1
         curr_max: int = points[row][-1]
         max_index: int = len(points[0]) - 1
-        for col in range(len(points[0] - 2, -1, -1)):
+        for col in range(len(points[0]) - 2, -1, -1):
             if points[row][col] > curr_max - 1:
                 cache[row][col] = col if points[row][cache[row][col]] < points[row][col] else cache[row][col]
                 max_index = col
@@ -76,3 +88,4 @@ def build_cache(points: List[List[int]]) -> List[List[int]]:
                 cache[row][col] = max_index if points[row][cache[row][col]] < points[row][max_index] else cache[row][col]
                 curr_max -= 1
     return cache
+

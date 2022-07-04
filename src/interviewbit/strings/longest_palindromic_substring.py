@@ -9,7 +9,22 @@ A string which reads the same backwards. More formally, A is palindrome if rever
 
 Incase of conflict, return the substring which occurs first ( with the least starting index).
 
+ 
 
+Example 1:
+
+Input: s = "babad"
+Output: "bab"
+Explanation: "aba" is also a valid answer.
+
+
+---------------------------
+Variation of possible middle points
+
+0 to N (inclusive) considering the left of it as the mid point
+
+0 to N - 1 (inclusive) considering the element it self as the mid point
+-------------------------
 
 aobosjahshauaahshaajd
 
