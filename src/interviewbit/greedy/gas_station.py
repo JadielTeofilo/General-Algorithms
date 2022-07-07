@@ -31,55 +31,56 @@ We want to start at the place with the most gas-distance ratio
 1 3 2 1 0 0 1 
 2 2 1 1 1 1 2
 
+3 2 5 1   
+2 4 2 2
+
+1-2 3-1
+
 5
 6
 
-Use variation of kardane algo
+The brute force is to try every starting point, when we get negative, we reset and try another starting point.
 
-keep a current gas and a last gas, and start index
+The catch is that you dont have to go all the way back and try the start_index + 1, cuz we already know that it wont work given it didn't work with the surplus of the start_index.
 
-iterate on the list, curr = gas-cost + last if gas - cost is bigger then curr, update curr, start index 
-last updates every time
-at the end check if the curr gas allows to get to start 
+We can then, iterate on the input, trying to keep positive, if negative, we reset and try starting from next position. When we get to the last index we continue until we get to start_index - 1
+
 
 O(n) time complexity where n is the size of both lists
-O(n) space
+O(1) space
 
 """
+import sys
 from typing import List
 
 
 class Solution:
-	# @param A : tuple of integers
-	# @param B : tuple of integers
-	# @return an integer
-	def canCompleteCircuit(self, gas_stations: List[int], 
-						   costs: List[int]) -> int:
-		if not gas_stations or not costs:
-			return -1
-		curr: int = 0
-		last: int = 0
-		start_index: int = 0
-		for (index, (gas, cost)) in enumerate(zip(gas_stations, costs)):
-			curr = gas - cost + last
-			if gas - cost > curr:
-				start_index = index
-				curr = gas - cost
-			last = curr
-		return self.check_circuit(gas_stations, costs, start_index)
+    def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
+        best_index: int = find_best_start(gas, cost)
+        if can_loop(best_index, gas, cost):
+            return best_index
+        return -1
 
-	def check_circuit(self, gas_stations: List[int], 
-					  costs: List[int], start: int) -> int:
-		gas_stations = self.rotate(gas_stations, start)
-		costs = self.rotate(costs, start) 
-		total_gas: int = 0
-		for gas, cost in zip(gas_stations, costs):
-			total_gas += gas
-			total_gas -= cost
-			if total_gas < 0:
-				return -1
-		return start
 
-	def rotate(self, numbers: List[int], start: int) -> List[int]:
-		return numbers[start:] + numbers[:start]
-		
+def find_best_start(gas: List[int], cost: List[int]) -> int:
+    best_start: int = 0
+    current: int = 0
+    for index, (gas_item, cost_item) in enumerate(zip(gas, cost)):
+        current += gas_item - cost_item
+        if current < 0:
+            current = 0
+            best_start = index + 1
+    return best_start
+
+def can_loop(start: int, gas: List[int], cost: List[int]) -> bool:
+    initial_path: int = gets_to_the_end(start, len(gas), gas, cost)
+    return gets_to_the_end(0, start, gas, cost, initial_path) >= 0
+
+
+def gets_to_the_end(start: int, end: int, gas: List[int],
+                    cost: List[int], current: int = 0) -> int:
+    for i in range(start, end):
+        current += gas[i] - cost[i]
+        if current < 0:
+            break
+    return current
