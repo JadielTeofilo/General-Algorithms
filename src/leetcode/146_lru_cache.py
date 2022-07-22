@@ -39,49 +39,44 @@ from typing import Dict, Optional
 
 @dataclasses.dataclass
 class ListNode:
-    key: int
-    value: int
+    key: Optional[int] = None
+    value: Optional[int] = None
     prev: Optional['ListNode'] = None
-    next_: Optional['ListNode'] = None
+    next: Optional['ListNode'] = None
 
 
 class Queue:
-    
+
     def __init__(self) -> None:
-        self.start: Optional[ListNode] = None
-        self.end: Optional[ListNode] = None
+        self.start: ListNode = ListNode()
+        self.end: ListNode = ListNode()
+
+        self.start.next = self.end
+        self.end.prev = self.start
 
     def move_to_the_back(self, node: ListNode) -> None:
-        if self.end == node:
-            return
-        if self.start == node:
-            self.start = node.next_
-
-        node.next_.prev = node.prev
-        if node.prev:
-            node.prev.next_ = node.next_
-        node.next_ = None
-        node.prev = self.end
-        self.end.next_ = node
+        self._remove_node(node)
+        self._add_node(node)
 
     def append(self, key: int, value: int) -> ListNode:
-        new_node: ListNode = ListNode(key, value)
-        if self.end:
-            self.end.next_ = new_node
-            new_node.prev = self.end
-            self.end = self.end.next_
-        else:
-            self.end = new_node
-        if not self.start:
-            self.start = self.end
-        return new_node
+        node: ListNode = ListNode(key, value)
+        return self._add_node(node)
+
+    def _add_node(self, node: ListNode) -> ListNode:
+        node.next = self.start.next
+        node.prev = self.start
+        self.start.next.prev = node
+        self.start.next = node
+        return node
 
     def popleft(self) -> Optional[ListNode]:
-        popped_node: Optional[ListNode] = self.start 
-        if self.start == self.end:
-            self.end = None
-        self.start = self.start.next_
-        return popped_node
+        node: ListNode = self.end.prev
+        self._remove_node(node)
+        return node
+
+    def _remove_node(self, node: ListNode) -> None:
+        node.prev.next = node.next
+        node.next.prev = node.prev
 
 
 Store = Dict[int, ListNode]
@@ -107,17 +102,19 @@ class LRUCache:
             return
         self.evict()
         self.store[key] = self.queue.append(key, value)
-    
+        self.capacity -= 1
+
     def evict(self) -> None:
-        if len(self.store) < self.capacity:
+        if self.capacity > 0:
             return
+        self.capacity += 1
         node: Optional[ListNode] = self.queue.popleft()
-        if node:
-            self.store.pop(node.key)
-               
+        self.store.pop(node.key)
+
 
 
 # Your LRUCache object will be instantiated and called as such:
 # obj = LRUCache(capacity)
 # param_1 = obj.get(key)
 # obj.put(key,value)
+
