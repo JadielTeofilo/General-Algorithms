@@ -21,7 +21,7 @@ BIT[x] =                    a[1] + ... + a[x],     if x is power of 2
 class BIT:
 
     def __init__(self, size) -> None:
-        self.tree = List[int] = [0] * (size + 1)
+        self.tree: List[int] = [0] * (size + 1)
 
     def update(self, index: int, value: int) -> None:
         while index < len(self.tree):
